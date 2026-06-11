@@ -13,25 +13,34 @@ export const employeeApi = baseApi.injectEndpoints({
             ]
           : [{ type: "Employee", id: "LIST" }],
     }),
+
     getEmployee: builder.query<Employee, number>({
       query: (id) => `/api/Employee/${id}`,
       providesTags: (_result, _error, id) => [{ type: "Employee", id }],
     }),
+
+
     createEmployee: builder.mutation<Employee, EmployeePayload>({
       query: (body) => ({ url: "/api/Employee", method: "POST", body }),
       invalidatesTags: [{ type: "Employee", id: "LIST" }],
     }),
+
+
     updateEmployee: builder.mutation<Employee, Employee>({
       query: ({ id, ...body }) => ({
         url: `/api/Employee/${id}`,
         method: "PUT",
         body,
       }),
+
+
       invalidatesTags: (_result, _error, { id }) => [
         { type: "Employee", id },
         { type: "Employee", id: "LIST" },
       ],
     }),
+
+
     deleteEmployee: builder.mutation<void, number>({
       query: (id) => ({ url: `/api/Employee/${id}`, method: "DELETE" }),
       invalidatesTags: (_result, _error, id) => [
@@ -39,6 +48,7 @@ export const employeeApi = baseApi.injectEndpoints({
         { type: "Employee", id: "LIST" },
       ],
     }),
+    
   }),
 });
 
