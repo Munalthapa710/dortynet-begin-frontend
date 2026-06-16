@@ -1,14 +1,22 @@
-import { BriefcaseBusiness, LayoutDashboard, Menu, Users, X } from "lucide-react";
+import { BriefcaseBusiness, ClipboardList, LayoutDashboard, LogOut, Menu, Users, X } from "lucide-react";
 import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { clearAuthSession } from "../../lib/auth";
 
 const navigation = [
   { label: "Dashboard", to: "/", icon: LayoutDashboard, end: true },
   { label: "Employees", to: "/employees", icon: Users, end: false },
+  { label: "Assign Tasks", to: "/assign-tasks", icon: ClipboardList, end: false },
 ];
 
 export function DashboardLayout() {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearAuthSession();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -22,7 +30,7 @@ export function DashboardLayout() {
             <span className="grid size-9 place-items-center rounded-lg bg-teal-600">
               <BriefcaseBusiness size={19} />
             </span>
-            Dorty Admin
+            Admin
           </div>
           <button className="lg:hidden" onClick={() => setOpen(false)} aria-label="Close menu">
             <X size={21} />
@@ -56,7 +64,12 @@ export function DashboardLayout() {
             <Menu size={21} />
           </button>
           <p className="text-sm font-semibold text-slate-700">Employee Management</p>
-          <div className="ml-auto grid size-9 place-items-center rounded-full bg-teal-100 text-sm font-bold text-teal-800">DA</div>
+          <button
+            onClick={handleLogout}
+            className="ml-auto inline-flex h-9 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            <LogOut size={16} /> Logout
+          </button>
         </header>
         <main className="p-4 sm:p-6 lg:p-8">
           <Outlet />
