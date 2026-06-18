@@ -6,7 +6,9 @@ import { clearAuthSession } from "../../lib/auth";
 const navigation = [
   { label: "Dashboard", to: "/", icon: LayoutDashboard, end: true },
   { label: "Employees", to: "/employees", icon: Users, end: false },
+  { label: "Departments", to: "/departments", icon: ClipboardList, end: false },
   { label: "Assign Tasks", to: "/assign-tasks", icon: ClipboardList, end: false },
+
 ];
 
 export function DashboardLayout() {

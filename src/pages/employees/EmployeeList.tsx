@@ -49,13 +49,16 @@ export default function EmployeeList() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                <tr><th className="px-5 py-3">Employee</th><th className="px-5 py-3">Email</th><th className="px-5 py-3">Salary</th><th className="px-5 py-3 text-right">Actions</th></tr>
+                <tr><th className="px-5 py-3">Employee</th><th className="px-5 py-3">Email</th><th>Department</th><th className="px-5 py-3">Salary</th><th className="px-5 py-3 text-right">Actions</th></tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((employee) => (
                   <tr key={employee.id} className="hover:bg-slate-50">
                     <td className="px-5 py-4 font-semibold text-slate-900">{employee.name}</td>
                     <td className="px-5 py-4 text-slate-600">{employee.email}</td>
+                    <td>
+  {employee.department?.name}
+</td>
                     <td className="px-5 py-4 text-slate-600">{formatCurrency(employee.salary)}</td>
                     <td className="px-5 py-4">
                       <div className="flex justify-end gap-2">

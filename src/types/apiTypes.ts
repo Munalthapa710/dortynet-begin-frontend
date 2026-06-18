@@ -3,6 +3,9 @@ export interface Employee {
   name: string;
   email: string;
   salary: number;
+    departmentId: number;
+
+  department?: Department;
 }
 
 export type EmployeePayload = Omit<Employee, "id">;
@@ -18,6 +21,14 @@ export interface AssignedTask {
 }
 
 export type AssignedTaskPayload = Omit<AssignedTask, "id" | "assignedOn">;
+
+export interface Department {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export type DepartmentPayload = Omit<Department, "id">;
 
 export interface LoginRequest {
   username: string;
