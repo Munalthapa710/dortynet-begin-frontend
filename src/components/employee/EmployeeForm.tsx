@@ -53,17 +53,6 @@ export function EmployeeForm({
           error={errors.email?.message}
           {...register("email")}
         />
-        <Input
-          label="Annual salary"
-          type="number"
-          step="0.01"
-          min="0"
-          placeholder="50000"
-          error={errors.salary?.message}
-          {...register("salary", { valueAsNumber: true })}
-        />
-      </div>
-      <div className="flex justify-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <div>
           <label className="block mb-2 text-sm font-medium">Department</label>
 
@@ -88,6 +77,18 @@ export function EmployeeForm({
             </p>
           )}
         </div>
+        <Input
+          label="Annual salary"
+          type="number"
+          step="0.01"
+          min="0"
+          placeholder="50000"
+          error={errors.salary?.message}
+          {...register("salary", { valueAsNumber: true })}
+        />
+      </div>
+      <div className="flex justify-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        
 
         <Button variant="secondary" onClick={() => navigate("/employees")}>
           <ArrowLeft size={17} /> Cancel
