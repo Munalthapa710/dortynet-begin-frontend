@@ -27,5 +27,12 @@ export default function EmployeeEdit() {
   if (isLoading) return <LoadingState />;
   if (error || !data) return <ErrorState message="Employee could not be found." />;
 
-  return <div className="space-y-6"><PageHeader title="Edit employee" description={`Update ${data.name}'s employee record.`} /><EmployeeForm defaultValues={{ name: data.name, email: data.email, salary: data.salary }} isSubmitting={saving} submitLabel="Update employee" onSubmit={onSubmit} /></div>;
+  return <div className="space-y-6"><PageHeader title="Edit employee" description={`Update ${data.name}'s employee record.`} />
+  <EmployeeForm
+  defaultValues={{
+    name: data.name,
+    email: data.email,
+    salary: data.salary,
+    departmentId: data.departmentId
+  }} isSubmitting={saving} submitLabel="Update employee" onSubmit={onSubmit} /></div>;
 }

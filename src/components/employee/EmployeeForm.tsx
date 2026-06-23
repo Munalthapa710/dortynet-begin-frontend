@@ -29,7 +29,12 @@ export function EmployeeForm({
     formState: { errors },
   } = useForm<EmployeeFormValues>({
     resolver: zodResolver(employeeSchema),
-    defaultValues: defaultValues ?? { name: "", email: "", salary: 0 },
+    defaultValues: defaultValues ?? {
+      name: "",
+      email: "",
+      departmentId: 0,
+      salary: 0,
+    },
   });
 
   const { data: departments = [] } = useGetDepartmentsQuery();
@@ -88,8 +93,6 @@ export function EmployeeForm({
         />
       </div>
       <div className="flex justify-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        
-
         <Button variant="secondary" onClick={() => navigate("/employees")}>
           <ArrowLeft size={17} /> Cancel
         </Button>
