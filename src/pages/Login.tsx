@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LogIn } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function Login() {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -42,18 +44,44 @@ export default function Login() {
 
   return (
     <main className="grid min-h-screen place-items-center bg-slate-50 p-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-sm space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-sm space-y-5 rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+      >
         <div>
           <div className="mb-3 grid size-11 place-items-center rounded-lg bg-teal-600 text-white">
             <LogIn size={20} />
           </div>
           <h1 className="text-xl font-bold text-slate-950">Sign in</h1>
-          <p className="mt-1 text-sm text-slate-500">Use your Employee API credentials.</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Use your Employee API credentials.
+          </p>
         </div>
 
         <div className="space-y-4">
-          <Input label="Username" autoComplete="username" error={errors.username?.message} {...register("username")} />
-          <Input label="Password" type="password" autoComplete="current-password" error={errors.password?.message} {...register("password")} />
+          <Input
+            label="Username"
+            autoComplete="username"
+            error={errors.username?.message}
+            {...register("username")}
+          />
+          <div className="relative">
+            <Input
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              error={errors.password?.message}
+              {...register("password")}
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-slate-500 hover:text-slate-700"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
 
         <Button type="submit" disabled={isLoading} className="w-full">
