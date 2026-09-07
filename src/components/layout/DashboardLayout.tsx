@@ -1,19 +1,29 @@
 import { BriefcaseBusiness, ClipboardList, LayoutDashboard, LogOut, Menu, Users, X } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { clearAuthSession } from "../../lib/auth";
+import { clearAuthSession, getAuthRole, type AuthRole } from "../../lib/auth";
+
+const managerRoles: AuthRole[] = ["Manager"];
 
 const navigation = [
   { label: "Dashboard", to: "/", icon: LayoutDashboard, end: true },
   { label: "Employees", to: "/employees", icon: Users, end: false },
   { label: "Departments", to: "/departments", icon: ClipboardList, end: false },
-  { label: "Assign Tasks", to: "/assign-tasks", icon: ClipboardList, end: false },
+  { label: "Assign Tasks", to: "/assign-tasks", icon: ClipboardList, end: false, roles: managerRoles },
 
-];
+] satisfies Array<{
+  label: string;
+  to: string;
+  icon: typeof LayoutDashboard;
+  end: boolean;
+  roles?: AuthRole[];
+}>;
 
 export function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const role = getAuthRole();
+  const visibleNavigation = navigation.filter((item) => !item.roles || (role && item.roles.includes(role)));
 
   const handleLogout = () => {
     clearAuthSession();
@@ -39,7 +49,7 @@ export function DashboardLayout() {
           </button>
         </div>
         <nav className="space-y-1 p-3">
-          {navigation.map(({ label, to, icon: Icon, end }) => (
+          {visibleNavigation.map(({ label, to, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}

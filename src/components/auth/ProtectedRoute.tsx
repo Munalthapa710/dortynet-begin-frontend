@@ -1,11 +1,18 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { isAuthenticated } from "../../lib/auth";
+import { getAuthRole, isAuthenticated, type AuthRole } from "../../lib/auth";
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  allowedRoles?: AuthRole[];
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  return isAuthenticated() ? children : <Navigate to="/login" replace />;
+export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
+  const role = getAuthRole();
+  if (allowedRoles && (!role || !allowedRoles.includes(role))) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 }

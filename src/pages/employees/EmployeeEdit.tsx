@@ -2,8 +2,8 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { EmployeeForm } from "../../components/employee/EmployeeForm";
 import { PageHeader } from "../../components/common/PageHeader";
-import { ErrorState, LoadingState } from "../../components/common/StateMessage";
-import { getApiErrorMessage } from "../../lib/apiError";
+import { AccessDeniedState, ErrorState, LoadingState } from "../../components/common/StateMessage";
+import { getApiErrorMessage, isApiForbidden } from "../../lib/apiError";
 import { useGetEmployeeQuery, useUpdateEmployeeMutation } from "../../redux/api/employeeApi";
 import type { EmployeeFormValues } from "../../zod/employeeZod";
 
@@ -25,6 +25,7 @@ export default function EmployeeEdit() {
 
   if (!Number.isInteger(id)) return <ErrorState message="Invalid employee ID." />;
   if (isLoading) return <LoadingState />;
+  if (isApiForbidden(error)) return <AccessDeniedState />;
   if (error || !data) return <ErrorState message="Employee could not be found." />;
 
   return <div className="space-y-6"><PageHeader title="Edit employee" description={`Update ${data.name}'s employee record.`} />

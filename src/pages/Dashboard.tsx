@@ -1,19 +1,30 @@
 import { Banknote, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageHeader } from "../components/common/PageHeader";
-import { ErrorState, LoadingState } from "../components/common/StateMessage";
+import { AccessDeniedState, ErrorState, LoadingState } from "../components/common/StateMessage";
+import { getAuthRole } from "../lib/auth";
+import { isApiForbidden } from "../lib/apiError";
 import { formatCurrency } from "../lib/format";
 import { useGetEmployeesQuery } from "../redux/api/employeeApi";
 
 export default function Dashboard() {
-  const { data = [], isLoading, error } = useGetEmployeesQuery();
+  const role = getAuthRole();
+  const isManager = role === "Manager";
+  const { data = [], isLoading, error } = useGetEmployeesQuery(undefined, { skip: !isManager });
   const totalPayroll = data.reduce((sum, employee) => sum + employee.salary, 0);
 
   return (
     <div className="space-y-6">
       <PageHeader title="Dashboard" description="A quick overview of your employee records." />
-      {isLoading ? (
+      {!isManager ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-medium text-slate-500">Signed in role</p>
+          <p className="mt-1 text-3xl font-bold text-slate-900">{role ?? "Employee"}</p>
+        </div>
+      ) : isLoading ? (
         <LoadingState />
+      ) : isApiForbidden(error) ? (
+        <AccessDeniedState />
       ) : error ? (
         <ErrorState message="Could not connect to the Employee API." />
       ) : (

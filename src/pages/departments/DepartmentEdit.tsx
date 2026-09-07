@@ -3,10 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { DepartmentForm } from "../../components/department/DepartmentForm";
 import { PageHeader } from "../../components/common/PageHeader";
 import {
+  AccessDeniedState,
   ErrorState,
   LoadingState,
 } from "../../components/common/StateMessage";
-import { getApiErrorMessage } from "../../lib/apiError";
+import { getApiErrorMessage, isApiForbidden } from "../../lib/apiError";
 
 import {
   useGetDepartmentQuery,
@@ -49,6 +50,8 @@ export default function DepartmentEdit() {
     return <ErrorState message="Invalid Department ID." />;
 
   if (isLoading) return <LoadingState />;
+
+  if (isApiForbidden(error)) return <AccessDeniedState />;
 
   if (error || !data)
     return (

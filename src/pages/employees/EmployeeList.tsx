@@ -3,14 +3,16 @@ import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { PageHeader } from "../../components/common/PageHeader";
-import { ErrorState, LoadingState } from "../../components/common/StateMessage";
+import { AccessDeniedState, ErrorState, LoadingState } from "../../components/common/StateMessage";
 import { Button } from "../../components/ui/Button";
-import { getApiErrorMessage } from "../../lib/apiError";
+import { getApiErrorMessage, isApiForbidden } from "../../lib/apiError";
+import { getAuthRole } from "../../lib/auth";
 import { formatCurrency } from "../../lib/format";
 import { useDeleteEmployeeMutation, useGetEmployeesQuery } from "../../redux/api/employeeApi";
 
 export default function EmployeeList() {
   const [search, setSearch] = useState("");
+  const isManager = getAuthRole() === "Manager";
   const { data = [], isLoading, error } = useGetEmployeesQuery();
   const [deleteEmployee, { isLoading: deleting }] = useDeleteEmployeeMutation();
 
@@ -33,8 +35,8 @@ export default function EmployeeList() {
     <div className="space-y-5">
       <PageHeader
         title="Employees"
-        description="View, search, create, and update employee records."
-        action={<Link to="/employees/new"><Button><Plus size={17} /> Add employee</Button></Link>}
+        description={isManager ? "View, search, create, and update employee records." : "View and search employee records."}
+        action={isManager ? <Link to="/employees/new"><Button><Plus size={17} /> Add employee</Button></Link> : undefined}
       />
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
@@ -42,6 +44,8 @@ export default function EmployeeList() {
       </div>
       {isLoading ? (
         <LoadingState />
+      ) : isApiForbidden(error) ? (
+        <AccessDeniedState />
       ) : error ? (
         <ErrorState message="Could not load employees. Check that the backend is running on port 5256." />
       ) : (
@@ -49,7 +53,7 @@ export default function EmployeeList() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                <tr><th className="px-5 py-3">Employee</th><th className="px-5 py-3">Email</th><th>Department</th><th className="px-5 py-3">Salary</th><th className="px-5 py-3 text-right">Actions</th></tr>
+                <tr><th className="px-5 py-3">Employee</th><th className="px-5 py-3">Email</th><th>Department</th><th className="px-5 py-3">Salary</th>{isManager && <th className="px-5 py-3 text-right">Actions</th>}</tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filtered.map((employee) => (
@@ -60,12 +64,14 @@ export default function EmployeeList() {
   {employee.department?.name}
 </td>
                     <td className="px-5 py-4 text-slate-600">{formatCurrency(employee.salary)}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex justify-end gap-2">
-                        <Link to={`/employees/${employee.id}/edit`} className="grid size-9 place-items-center rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100" aria-label={`Edit ${employee.name}`}><Pencil size={16} /></Link>
-                        <button disabled={deleting} onClick={() => handleDelete(employee.id, employee.name)} className="grid size-9 place-items-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50" aria-label={`Delete ${employee.name}`}><Trash2 size={16} /></button>
-                      </div>
-                    </td>
+                    {isManager && (
+                      <td className="px-5 py-4">
+                        <div className="flex justify-end gap-2">
+                          <Link to={`/employees/${employee.id}/edit`} className="grid size-9 place-items-center rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100" aria-label={`Edit ${employee.name}`}><Pencil size={16} /></Link>
+                          <button disabled={deleting} onClick={() => handleDelete(employee.id, employee.name)} className="grid size-9 place-items-center rounded-lg border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50" aria-label={`Delete ${employee.name}`}><Trash2 size={16} /></button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

@@ -1,6 +1,13 @@
 import type { ApiError } from "../types/apiTypes";
 
+export const isApiForbidden = (error: unknown) => {
+  const apiError = error as ApiError | undefined;
+  return apiError?.status === 403 || apiError?.status === "403";
+};
+
 export const getApiErrorMessage = (error: unknown) => {
+  if (isApiForbidden(error)) return "Access denied.";
+
   const apiError = error as ApiError | undefined;
   const data = typeof apiError?.data === "string" ? undefined : apiError?.data;
   const validationMessage = data?.errors

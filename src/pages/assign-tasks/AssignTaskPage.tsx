@@ -4,10 +4,10 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PageHeader } from "../../components/common/PageHeader";
-import { ErrorState, LoadingState } from "../../components/common/StateMessage";
+import { AccessDeniedState, ErrorState, LoadingState } from "../../components/common/StateMessage";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
-import { getApiErrorMessage } from "../../lib/apiError";
+import { getApiErrorMessage, isApiForbidden } from "../../lib/apiError";
 import {
   useCreateAssignedTaskMutation,
   useDeleteAssignedTaskMutation,
@@ -94,6 +94,7 @@ export default function AssignTaskPage() {
 
   const isLoading = employeesLoading || tasksLoading;
   const hasError = employeesError || tasksError;
+  const isForbidden = isApiForbidden(employeesError) || isApiForbidden(tasksError);
 
   return (
     <div className="space-y-6">
@@ -160,6 +161,8 @@ export default function AssignTaskPage() {
 
       {isLoading ? (
         <LoadingState />
+      ) : isForbidden ? (
+        <AccessDeniedState />
       ) : hasError ? (
         <ErrorState message="Could not load assign task data. Check that the backend is running and you are authorized." />
       ) : (

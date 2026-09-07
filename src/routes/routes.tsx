@@ -49,31 +49,55 @@ export const routes: RouteObject[] = [
       },
       {
         path: "employees/new",
-        element: <EmployeeCreate />,
+        element: (
+          <ProtectedRoute allowedRoles={["Manager"]}>
+            <EmployeeCreate />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "employees/:id/edit",
-        element: <EmployeeEdit />,
+        element: (
+          <ProtectedRoute allowedRoles={["Manager"]}>
+            <EmployeeEdit />
+          </ProtectedRoute>
+        ),
       },
 
       // Departments
       {
         path: "departments",
-        element: <DepartmentList />,
+        element: (
+          <ProtectedRoute >
+            <DepartmentList />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "departments/new",
-        element: <DepartmentCreate />,
+        element: (
+          <ProtectedRoute allowedRoles={["Manager"]}>
+            <DepartmentCreate />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "departments/:id/edit",
-        element: <DepartmentEdit />,
+        element: (
+          <ProtectedRoute allowedRoles={["Manager"]}>
+            <DepartmentEdit />
+          </ProtectedRoute>
+        ),
       },
 
       // Assign Tasks
       {
         path: "assign-tasks",
-        element: <AssignTaskPage />,
+        element: (
+          <ProtectedRoute allowedRoles={["Manager"]}>
+            <AssignTaskPage />
+          </ProtectedRoute>
+        ),
       },
 
       {

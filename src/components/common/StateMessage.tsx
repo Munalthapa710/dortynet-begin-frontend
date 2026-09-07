@@ -17,3 +17,7 @@ export function ErrorState({ message }: { message: string }) {
     </div>
   );
 }
+
+export function AccessDeniedState() {
+  return <ErrorState message="Access denied. You do not have permission to view this page." />;
+}

@@ -11,13 +11,15 @@ import { Link } from "react-router-dom";
 
 import { PageHeader } from "../../components/common/PageHeader";
 import {
+  AccessDeniedState,
   ErrorState,
   LoadingState,
 } from "../../components/common/StateMessage";
 
 import { Button } from "../../components/ui/Button";
 
-import { getApiErrorMessage } from "../../lib/apiError";
+import { getApiErrorMessage, isApiForbidden } from "../../lib/apiError";
+import { getAuthRole } from "../../lib/auth";
 
 import {
   useDeleteDepartmentMutation,
@@ -26,6 +28,7 @@ import {
 
 export default function DepartmentList() {
   const [search, setSearch] = useState("");
+  const isManager = getAuthRole() === "Manager";
 
   const {
     data = [],
@@ -72,14 +75,14 @@ export default function DepartmentList() {
     <div className="space-y-5">
       <PageHeader
         title="Departments"
-        description="Manage departments."
+        description={isManager ? "Manage departments." : "View and search departments."}
         action={
-          <Link to="/departments/new">
+          isManager ? <Link to="/departments/new">
             <Button>
               <Plus size={17} />
               Add Department
             </Button>
-          </Link>
+          </Link> : undefined
         }
       />
 
@@ -101,6 +104,8 @@ export default function DepartmentList() {
 
       {isLoading ? (
         <LoadingState />
+      ) : isApiForbidden(error) ? (
+        <AccessDeniedState />
       ) : error ? (
         <ErrorState message="Could not load departments." />
       ) : (
@@ -117,9 +122,11 @@ export default function DepartmentList() {
                     Description
                   </th>
 
-                  <th className="px-5 py-3 text-right">
-                    Actions
-                  </th>
+                  {isManager && (
+                    <th className="px-5 py-3 text-right">
+                      Actions
+                    </th>
+                  )}
                 </tr>
               </thead>
 
@@ -134,29 +141,31 @@ export default function DepartmentList() {
                       {department.description}
                     </td>
 
-                    <td className="px-5 py-4">
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          to={`/departments/${department.id}/edit`}
-                          className="grid size-9 place-items-center rounded-lg border"
-                        >
-                          <Pencil size={16} />
-                        </Link>
+                    {isManager && (
+                      <td className="px-5 py-4">
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            to={`/departments/${department.id}/edit`}
+                            className="grid size-9 place-items-center rounded-lg border"
+                          >
+                            <Pencil size={16} />
+                          </Link>
 
-                        <button
-                          disabled={deleting}
-                          onClick={() =>
-                            handleDelete(
-                              department.id,
-                              department.name
-                            )
-                          }
-                          className="grid size-9 place-items-center rounded-lg border border-red-200 text-red-600"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+                          <button
+                            disabled={deleting}
+                            onClick={() =>
+                              handleDelete(
+                                department.id,
+                                department.name
+                              )
+                            }
+                            className="grid size-9 place-items-center rounded-lg border border-red-200 text-red-600"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

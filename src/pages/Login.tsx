@@ -12,7 +12,7 @@ import { getApiErrorMessage } from "../lib/apiError";
 import { useLoginMutation } from "../redux/api/authApi";
 
 const loginSchema = z.object({
-  username: z.string().trim().min(1, "Username is required"),
+  username: z.string().trim().min(1, "Email or username is required"),
   password: z.string().min(1, "Password is required"),
 });
 
@@ -60,7 +60,8 @@ export default function Login() {
 
         <div className="space-y-4">
           <Input
-            label="Username"
+            label="Email or username"
+            placeholder="employee@email.com"
             autoComplete="username"
             error={errors.username?.message}
             {...register("username")}
