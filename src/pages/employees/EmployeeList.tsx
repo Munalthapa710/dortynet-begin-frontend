@@ -8,13 +8,20 @@ import { Button } from "../../components/ui/Button";
 import { getApiErrorMessage, isApiForbidden } from "../../lib/apiError";
 import { getAuthRole } from "../../lib/auth";
 import { formatCurrency } from "../../lib/format";
+import { useGetDepartmentsQuery } from "../../redux/api/departmentApi";
 import { useDeleteEmployeeMutation, useGetEmployeesQuery } from "../../redux/api/employeeApi";
 
 export default function EmployeeList() {
   const [search, setSearch] = useState("");
   const isManager = getAuthRole() === "Manager";
   const { data = [], isLoading, error } = useGetEmployeesQuery();
+  const { data: departments = [] } = useGetDepartmentsQuery();
   const [deleteEmployee, { isLoading: deleting }] = useDeleteEmployeeMutation();
+
+  const departmentNames = useMemo(
+    () => new Map(departments.map((department) => [department.id, department.name])),
+    [departments],
+  );
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -60,9 +67,9 @@ export default function EmployeeList() {
                   <tr key={employee.id} className="hover:bg-slate-50">
                     <td className="px-5 py-4 font-semibold text-slate-900">{employee.name}</td>
                     <td className="px-5 py-4 text-slate-600">{employee.email}</td>
-                    <td>
-  {employee.department?.name}
-</td>
+                    <td className="px-5 py-4 text-slate-600">
+                      {employee.department?.name ?? departmentNames.get(employee.departmentId) ?? `Department #${employee.departmentId}`}
+                    </td>
                     <td className="px-5 py-4 text-slate-600">{formatCurrency(employee.salary)}</td>
                     {isManager && (
                       <td className="px-5 py-4">
