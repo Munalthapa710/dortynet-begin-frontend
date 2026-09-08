@@ -19,6 +19,7 @@ export default function EmployeeEdit() {
       toast.success("Employee updated");
       navigate("/employees");
     } catch (updateError) {
+      console.error("Update employee failed", updateError);
       toast.error(getApiErrorMessage(updateError));
     }
   };
@@ -33,7 +34,11 @@ export default function EmployeeEdit() {
   defaultValues={{
     name: data.name,
     email: data.email,
+    phoneNumber: data.phoneNumber,
+    password: data.password ?? "",
+    role: data.role,
     salary: data.salary,
-    departmentId: data.departmentId
+    departmentId: data.departmentId,
+    clientId: data.clientId
   }} isSubmitting={saving} submitLabel="Update employee" onSubmit={onSubmit} /></div>;
 }

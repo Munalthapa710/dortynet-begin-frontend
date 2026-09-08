@@ -16,6 +16,7 @@ export default function EmployeeCreate() {
       toast.success("Employee created");
       navigate("/employees");
     } catch (error) {
+      console.error("Create employee failed", error);
       toast.error(getApiErrorMessage(error));
     }
   };

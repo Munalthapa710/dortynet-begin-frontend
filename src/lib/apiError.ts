@@ -17,9 +17,12 @@ export const getApiErrorMessage = (error: unknown) => {
   return (
     (typeof apiError?.data === "string" ? apiError.data : undefined) ||
     validationMessage ||
+    data?.message ||
+    data?.error ||
     data?.detail ||
     data?.title ||
     apiError?.error ||
+    (apiError?.status ? `Request failed with status ${apiError.status}.` : undefined) ||
     "Something went wrong. Please try again."
   );
 };

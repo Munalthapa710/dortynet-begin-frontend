@@ -2,13 +2,17 @@ export interface Employee {
   id: number;
   name: string;
   email: string;
+  phoneNumber: string;
+  password?: string;
+  role: "Manager" | "Employee";
   salary: number;
-    departmentId: number;
+  departmentId: number;
+  clientId: number | null;
 
   department?: Department;
 }
 
-export type EmployeePayload = Omit<Employee, "id">;
+export type EmployeePayload = Omit<Employee, "id" | "department">;
 
 export interface AssignedTask {
   id: number;
@@ -47,6 +51,8 @@ export interface ApiError {
     | {
         title?: string;
         detail?: string;
+        message?: string;
+        error?: string;
         errors?: Record<string, string[]>;
       };
   error?: string;

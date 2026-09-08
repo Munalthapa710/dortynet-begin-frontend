@@ -21,7 +21,7 @@ export const employeeApi = baseApi.injectEndpoints({
 
 
     createEmployee: builder.mutation<Employee, EmployeePayload>({
-      query: (body) => ({ url: "/api/Employee", method: "POST", body }),
+      query: (body) => ({ url: "/api/employee/new", method: "POST", body }),
       invalidatesTags: [{ type: "Employee", id: "LIST" }],
     }),
 

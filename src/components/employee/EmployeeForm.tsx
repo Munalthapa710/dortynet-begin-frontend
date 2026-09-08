@@ -32,7 +32,11 @@ export function EmployeeForm({
     defaultValues: defaultValues ?? {
       name: "",
       email: "",
+      phoneNumber: "",
+      password: "",
+      role: "Employee",
       departmentId: 0,
+      clientId: null,
       salary: 0,
     },
   });
@@ -58,6 +62,34 @@ export function EmployeeForm({
           error={errors.email?.message}
           {...register("email")}
         />
+        <Input
+          label="Phone number"
+          placeholder="9800000000"
+          error={errors.phoneNumber?.message}
+          {...register("phoneNumber")}
+        />
+        <Input
+          label="Password"
+          type="password"
+          placeholder="Temporary password"
+          error={errors.password?.message}
+          {...register("password")}
+        />
+        <label className="block space-y-1.5">
+          <span className="text-sm font-medium text-slate-700">Role</span>
+          <select
+            {...register("role")}
+            className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+          >
+            <option value="Employee">Employee</option>
+            <option value="Manager">Manager</option>
+          </select>
+          {errors.role && (
+            <p className="mt-1 text-xs text-red-600">
+              {errors.role.message}
+            </p>
+          )}
+        </label>
         <div>
           <label className="block mb-2 text-sm font-medium">Department</label>
 
@@ -90,6 +122,16 @@ export function EmployeeForm({
           placeholder="50000"
           error={errors.salary?.message}
           {...register("salary", { valueAsNumber: true })}
+        />
+        <Input
+          label="Client ID"
+          type="number"
+          min="1"
+          placeholder="Leave empty if not assigned"
+          error={errors.clientId?.message}
+          {...register("clientId", {
+            setValueAs: (value) => value === "" ? null : Number(value),
+          })}
         />
       </div>
       <div className="flex justify-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
