@@ -10,9 +10,19 @@ export interface Employee {
   clientId: number | null;
 
   department?: Department;
+  client?: Client;
 }
 
-export type EmployeePayload = Omit<Employee, "id" | "department">;
+export type EmployeePayload = Omit<Employee, "id" | "department" | "client">;
+
+export interface Client {
+  id: number;
+  clientName: string;
+  phoneNumber: string;
+  projectName: string;
+}
+
+export type ClientPayload = Omit<Client, "id">;
 
 export interface AssignedTask {
   id: number;

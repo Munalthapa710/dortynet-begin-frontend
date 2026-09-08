@@ -16,6 +16,7 @@ import DepartmentCreate from "../pages/departments/DepartmentCreate";
 import DepartmentEdit from "../pages/departments/DepartmentEdit";
 
 import AssignTaskPage from "../pages/assign-tasks/AssignTaskPage";
+import ClientList from "../pages/clients/ClientList";
 
 export const routes: RouteObject[] = [
   {
@@ -67,11 +68,7 @@ export const routes: RouteObject[] = [
       // Departments
       {
         path: "departments",
-        element: (
-          <ProtectedRoute >
-            <DepartmentList />
-          </ProtectedRoute>
-        ),
+        element: <DepartmentList />,
       },
       {
         path: "departments/new",
@@ -88,6 +85,12 @@ export const routes: RouteObject[] = [
             <DepartmentEdit />
           </ProtectedRoute>
         ),
+      },
+
+      // Clients
+      {
+        path: "clients",
+        element: <ClientList />,
       },
 
       // Assign Tasks

@@ -7,6 +7,7 @@ import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { employeeSchema, type EmployeeFormValues } from "../../zod/employeeZod";
 import { useGetDepartmentsQuery } from "../../redux/api/departmentApi";
+import { useGetClientsQuery } from "../../redux/api/clientApi";
 
 interface EmployeeFormProps {
   defaultValues?: EmployeeFormValues;
@@ -42,6 +43,7 @@ export function EmployeeForm({
   });
 
   const { data: departments = [] } = useGetDepartmentsQuery();
+  const { data: clients = [] } = useGetClientsQuery();
   useEffect(() => {
     if (defaultValues) reset(defaultValues);
   }, [defaultValues, reset]);
@@ -123,16 +125,27 @@ export function EmployeeForm({
           error={errors.salary?.message}
           {...register("salary", { valueAsNumber: true })}
         />
-        <Input
-          label="Client ID"
-          type="number"
-          min="1"
-          placeholder="Leave empty if not assigned"
-          error={errors.clientId?.message}
-          {...register("clientId", {
-            setValueAs: (value) => value === "" ? null : Number(value),
-          })}
-        />
+        <label className="block space-y-1.5">
+          <span className="text-sm font-medium text-slate-700">Client</span>
+          <select
+            {...register("clientId", {
+              setValueAs: (value) => value === "" ? null : Number(value),
+            })}
+            className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+          >
+            <option value="">No client</option>
+            {clients.map((client) => (
+              <option key={client.id} value={client.id}>
+                {client.clientName}
+              </option>
+            ))}
+          </select>
+          {errors.clientId && (
+            <p className="mt-1 text-xs text-red-600">
+              {errors.clientId.message}
+            </p>
+          )}
+        </label>
       </div>
       <div className="flex justify-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
         <Button variant="secondary" onClick={() => navigate("/employees")}>
