@@ -1,14 +1,26 @@
-import type { Employee, EmployeePayload } from "../../types/apiTypes";
+import type { Employee, EmployeePayload, PagedResponse } from "../../types/apiTypes";
 import { baseApi } from "./baseApi";
+
+export interface EmployeeListParams {
+  page?: number;
+  limit?: number;
+  query?: string;
+}
 
 export const employeeApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getEmployees: builder.query<Employee[], void>({
-      query: () => "/api/Employee",
+    getEmployees: builder.query<PagedResponse<Employee>, EmployeeListParams | void>({
+      query: (params) => {
+        const page = params?.page ?? 1;
+        const limit = params?.limit ?? 10;
+        const query = params?.query ?? "";
+
+        return `/api/employee?page=${page}&limit=${limit}&query=${encodeURIComponent(query)}`;
+      },
       providesTags: (result) =>
         result
           ? [
-              ...result.map(({ id }) => ({ type: "Employee" as const, id })),
+              ...result.items.map(({ id }) => ({ type: "Employee" as const, id })),
               { type: "Employee", id: "LIST" },
             ]
           : [{ type: "Employee", id: "LIST" }],

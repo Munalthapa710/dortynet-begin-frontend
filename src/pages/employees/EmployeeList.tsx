@@ -1,4 +1,4 @@
-import { Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -11,10 +11,22 @@ import { formatCurrency } from "../../lib/format";
 import { useGetDepartmentsQuery } from "../../redux/api/departmentApi";
 import { useDeleteEmployeeMutation, useGetEmployeesQuery } from "../../redux/api/employeeApi";
 
+const EMPLOYEE_LIMIT = 10;
+
 export default function EmployeeList() {
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const isManager = getAuthRole() === "Manager";
-  const { data = [], isLoading, error } = useGetEmployeesQuery();
+  const { data, isLoading, error } = useGetEmployeesQuery({
+    page,
+    limit: EMPLOYEE_LIMIT,
+    query: search,
+  });
+  const employees = data?.items ?? [];
+  const totalEmployees = data?.rowTotal ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalEmployees / EMPLOYEE_LIMIT));
+  const firstResult = totalEmployees === 0 ? 0 : (page - 1) * EMPLOYEE_LIMIT + 1;
+  const lastResult = Math.min(page * EMPLOYEE_LIMIT, totalEmployees);
   const { data: departments = [] } = useGetDepartmentsQuery();
   const [deleteEmployee, { isLoading: deleting }] = useDeleteEmployeeMutation();
 
@@ -22,11 +34,6 @@ export default function EmployeeList() {
     () => new Map(departments.map((department) => [department.id, department.name])),
     [departments],
   );
-
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return query ? data.filter((employee) => `${employee.name} ${employee.email}`.toLowerCase().includes(query)) : data;
-  }, [data, search]);
 
   const handleDelete = async (id: number, name: string) => {
     if (!window.confirm(`Delete ${name}? This action cannot be undone.`)) return;
@@ -38,6 +45,11 @@ export default function EmployeeList() {
     }
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
   return (
     <div className="space-y-5">
       <PageHeader
@@ -47,7 +59,7 @@ export default function EmployeeList() {
       />
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name or email..." className="h-11 w-full rounded-lg border border-slate-300 bg-white pl-10 pr-4 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100" />
+        <input value={search} onChange={(event) => handleSearchChange(event.target.value)} placeholder="Search name or email..." className="h-11 w-full rounded-lg border border-slate-300 bg-white pl-10 pr-4 text-sm outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100" />
       </div>
       {isLoading ? (
         <LoadingState />
@@ -57,18 +69,21 @@ export default function EmployeeList() {
         <ErrorState message="Could not load employees. Check that the backend is running on port 5256." />
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          {/* <div className="border-b border-slate-200 bg-slate-50 px-5 py-3 text-sm text-slate-600">
+            Showing {firstResult}-{lastResult} of {totalEmployees} employees
+          </div> */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr><th className="px-5 py-3">Employee</th><th className="px-5 py-3">Email</th><th>Department</th><th className="px-5 py-3">Salary</th>{isManager && <th className="px-5 py-3 text-right">Actions</th>}</tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filtered.map((employee) => (
+                {employees.map((employee) => (
                   <tr key={employee.id} className="hover:bg-slate-50">
                     <td className="px-5 py-4 font-semibold text-slate-900">{employee.name}</td>
                     <td className="px-5 py-4 text-slate-600">{employee.email}</td>
                     <td className="px-5 py-4 text-slate-600">
-                      {employee.department?.name ?? departmentNames.get(employee.departmentId) ?? `Department #${employee.departmentId}`}
+                      {employee.departmentName ?? employee.department?.name ?? departmentNames.get(employee.departmentId) ?? `Department #${employee.departmentId}`}
                     </td>
                     <td className="px-5 py-4 text-slate-600">{formatCurrency(employee.salary)}</td>
                     {isManager && (
@@ -84,7 +99,18 @@ export default function EmployeeList() {
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && <div className="p-10 text-center text-sm text-slate-500">{search ? "No employees match your search." : "No employees yet. Add your first employee."}</div>}
+          {employees.length === 0 && <div className="p-10 text-center text-sm text-slate-500">{search ? "No employees match your search." : "No employees yet. Add your first employee."}</div>}
+          <div className="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+            <span>Page {page} of {totalPages}</span>
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" disabled={page <= 1 || isLoading} onClick={() => setPage((current) => Math.max(1, current - 1))}>
+                <ChevronLeft size={16} /> Previous
+              </Button>
+              <Button variant="secondary" disabled={page >= totalPages || isLoading} onClick={() => setPage((current) => Math.min(totalPages, current + 1))}>
+                Next <ChevronRight size={16} />
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

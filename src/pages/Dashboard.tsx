@@ -10,8 +10,9 @@ import { useGetEmployeesQuery } from "../redux/api/employeeApi";
 export default function Dashboard() {
   const role = getAuthRole();
   const isManager = role === "Manager";
-  const { data = [], isLoading, error } = useGetEmployeesQuery(undefined, { skip: !isManager });
-  const totalPayroll = data.reduce((sum, employee) => sum + employee.salary, 0);
+  const { data, isLoading, error } = useGetEmployeesQuery(undefined, { skip: !isManager });
+  const employees = data?.items ?? [];
+  const totalPayroll = employees.reduce((sum, employee) => sum + employee.salary, 0);
 
   return (
     <div className="space-y-6">
@@ -33,7 +34,7 @@ export default function Dashboard() {
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <span className="grid size-10 place-items-center rounded-lg bg-teal-100 text-teal-700"><Users size={20} /></span>
               <p className="mt-4 text-sm font-medium text-slate-500">Total employees</p>
-              <p className="mt-1 text-3xl font-bold text-slate-900">{data.length}</p>
+              <p className="mt-1 text-3xl font-bold text-slate-900">{data?.rowTotal ?? employees.length}</p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <span className="grid size-10 place-items-center rounded-lg bg-amber-100 text-amber-700"><Banknote size={20} /></span>

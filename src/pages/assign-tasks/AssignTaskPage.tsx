@@ -42,7 +42,8 @@ function formatDate(value: string | null) {
 }
 
 export default function AssignTaskPage() {
-  const { data: employees = [], isLoading: employeesLoading, error: employeesError } = useGetEmployeesQuery();
+  const { data: employeeResponse, isLoading: employeesLoading, error: employeesError } = useGetEmployeesQuery();
+  const employees = employeeResponse?.items ?? [];
   const { data: tasks = [], isLoading: tasksLoading, error: tasksError } = useGetAssignedTasksQuery();
   const [createTask, { isLoading: creating }] = useCreateAssignedTaskMutation();
   const [updateTask, { isLoading: updating }] = useUpdateAssignedTaskMutation();
@@ -200,7 +201,7 @@ export default function AssignTaskPage() {
                       <select
                         value={task.status}
                         disabled={updating}
-                        onChange={(event) => handleStatusChange(task, event.target.value)}
+                        onChange={(event) => handleStatusChange(task, event.target.value as AssignedTask["status"])}
                         className="h-9 rounded-lg border border-slate-300 bg-white px-2 text-sm text-slate-700 outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100 disabled:opacity-60"
                       >
                         {taskStatuses.map((status) => (

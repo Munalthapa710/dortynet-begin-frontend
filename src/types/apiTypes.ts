@@ -7,13 +7,23 @@ export interface Employee {
   role: "Manager" | "Employee";
   salary: number;
   departmentId: number;
+  departmentName?: string;
   clientId: number | null;
+  clientName?: string | null;
+  rowTotal?: number;
 
   department?: Department;
   client?: Client;
 }
 
-export type EmployeePayload = Omit<Employee, "id" | "department" | "client">;
+export type EmployeePayload = Omit<Employee, "id" | "department" | "departmentName" | "client" | "clientName" | "rowTotal">;
+
+export interface PagedResponse<T> {
+  items: T[];
+  rowTotal: number;
+  page: number;
+  limit: number;
+}
 
 export interface Client {
   id: number;
